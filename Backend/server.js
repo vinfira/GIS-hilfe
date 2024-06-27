@@ -23,7 +23,7 @@ async function openDatabase() {
 
 async function createTable() {
     try {
-        await db.exec(`CREATE TABLE IF NOT EXISTS kühlschrank (
+        await db.exec(`CREATE TABLE IF NOT EXISTS inhalt (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             expiry REAL NOT NULL,
