@@ -4,7 +4,7 @@ const sqlite3 = require('sqlite3');
 const sqlite = require('sqlite');
 
 const hostname = '127.0.0.1';
-const port = 3000;
+const port = 3001;
 
 let db;
 
@@ -26,7 +26,7 @@ async function createTable() {
         await db.exec(`CREATE TABLE IF NOT EXISTS inhalt (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            expiry REAL NOT NULL,
+            expiry REAL NOT NULL
         )`);
         console.log('Tabelle "kühlschrank" erfolgreich erstellt');
     } catch (error) {
