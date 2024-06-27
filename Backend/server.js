@@ -4,7 +4,7 @@ const sqlite3 = require('sqlite3');
 const sqlite = require('sqlite');
 
 const hostname = '127.0.0.1';
-const port = 3001;
+const port = 3000;
 
 let db;
 
@@ -26,16 +26,15 @@ async function createTable() {
         await db.exec(`CREATE TABLE IF NOT EXISTS inhalt (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            expiry REAL NOT NULL
+            expiry TEXT NOT NULL
         )`);
-        console.log('Tabelle "kühlschrank" erfolgreich erstellt');
+        console.log('Tabelle "inhalt" erfolgreich erstellt');
     } catch (error) {
         console.error('Fehler beim Erstellen der Tabelle:', error.message);
     }
 }
 
 const server = http.createServer(async (req, res) => {
-
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
@@ -66,7 +65,7 @@ const server = http.createServer(async (req, res) => {
         req.on('end', async () => {
             const newItem = JSON.parse(body);
             try {
-                const result = await db.run('INSERT INTO inhalt (itemName, expiryDate) VALUES (?, ?)',
+                const result = await db.run('INSERT INTO inhalt (name, expiry) VALUES (?, ?)',
                     [newItem.name, newItem.expiry || '']);
                 res.writeHead(201, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Lebensmittel hinzugefügt', id: result.lastID }));
@@ -76,23 +75,17 @@ const server = http.createServer(async (req, res) => {
                 res.end('Internal Server Error');
             }
         });
-    } else if (pathname.startsWith('/remove') && req.method === 'DELETE') {
-        let body = '';
-        req.on('data', (chunk) => {
-            body += chunk.toString();
-        });
-        req.on('end', async () => {
-            const { id } = JSON.parse(body);
-            try {
-                await db.run('DELETE FROM inhalt WHERE id = ?', id);
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: 'Lebensmittel gelöscht', id }));
-            } catch (error) {
-                console.error('Fehler beim Löschen des Lebensmittels:', error.message);
-                res.writeHead(500);
-                res.end('Internal Server Error');
-            }
-        });
+    } else if (pathname === '/remove' && req.method === 'DELETE') {
+        const { id } = query;
+        try {
+            await db.run('DELETE FROM inhalt WHERE id = ?', id);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'Lebensmittel gelöscht', id }));
+        } catch (error) {
+            console.error('Fehler beim Löschen des Lebensmittels:', error.message);
+            res.writeHead(500);
+            res.end('Internal Server Error');
+        }
     } else {
         res.writeHead(404);
         res.end('Page not found');
@@ -103,7 +96,7 @@ async function startServer() {
     await openDatabase();
     await createTable();
     server.listen(port, hostname, () => {
-        console.log(`Server läuft unter http://${hostname}:${port}/`);
+        console.log('Server läuft unter http://${hostname}:${port}/');
     });
 }
 

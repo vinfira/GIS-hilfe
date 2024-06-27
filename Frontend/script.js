@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Funktion zum Laden der Lebensmittel-Liste
     function loadItemList() {
-        fetch('http://localhost:3000/api/items')
+        fetch('http://localhost:3000/inhalt')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Fehler beim Laden der Lebensmittel-Liste');
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Funktion zum Löschen eines Lebensmittels
     function deleteItem(id) {
-        fetch(`http://localhost:3000/api/items/${id}`, {
+        fetch('http://localhost:3000/remove?id=${id}', {
             method: 'DELETE'
         })
         .then(response => {
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const newItem = { name, expiry };
 
-            fetch('http://localhost:3000/api/items', {
+            fetch('http://localhost:3000/addItem', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
